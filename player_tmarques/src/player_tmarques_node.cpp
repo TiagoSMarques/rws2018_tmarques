@@ -5,7 +5,9 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 
+#include <rws2018_libs/team.h>
 #include <sstream>
+
 using namespace std;
 
 namespace rws_tmarques
@@ -66,16 +68,6 @@ private:
   string team;
 };
 
-class Team
-{
-public:
-  Team(string name)
-  {
-  }
-
-  vector<string> player_names;
-};
-
 class MyPlayer : public Player
 {
 public:
@@ -108,12 +100,12 @@ int main(int argc, char** argv)
 
   ros::NodeHandle n;
 
-  rws_tmarques::MyPlayer my_player("mtiago", "green");
+  rws_tmarques::MyPlayer my_player("tmarques", "green");
 
-  string test_param_value;
-  n.getParam("test_param", test_param_value);
+  if (my_player.red_team->playerBelongsToTeam("tmarques"))
+  {
+    cout << "o tiago esta na equipa certa" << endl;
+  };
 
-  cout << "read test_param with value " << test_param_value << endl;
-  // my_player.PrintReport();
   ros::spin();
 }
