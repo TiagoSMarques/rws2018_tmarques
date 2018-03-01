@@ -93,7 +93,7 @@ public:
     static tf::TransformBroadcaster br;  // declare the bradcaster
     tf::Transform transform;
 
-    transform.setOrigin(tf::Vector3(2, 4, 0.0));
+    transform.setOrigin(tf::Vector3(-2, -4, 0.0));
     tf::Quaternion q;
     q.setRPY(0, 0, M_PI / 4);
     transform.setRotation(q);
