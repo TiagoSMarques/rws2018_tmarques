@@ -8,6 +8,8 @@
 #include <rws2018_libs/team.h>
 #include <sstream>
 
+#include <tf/transform_broadcaster.h>
+
 using namespace std;
 
 namespace rws_tmarques
@@ -86,6 +88,18 @@ public:
     PrintReport();
   }
 
+  void move()
+  {
+    static tf::TransformBroadcaster br;  // declare the bradcaster
+    tf::Transform transform;
+
+    transform.setOrigin(tf::Vector3(2, 4, 0.0));
+    tf::Quaternion q;
+    q.setRPY(0, 0, M_PI / 4);
+    transform.setRotation(q);
+    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tmarques"));
+  }
+
   void PrintReport()
   {
     cout << "My name is " << name << " and my team is " << getTeam() << endl;
@@ -98,14 +112,22 @@ int main(int argc, char** argv)
   // Creating an instance of class Player
   ros::init(argc, argv, "tmarques");
 
-  ros::NodeHandle n;
-
   rws_tmarques::MyPlayer my_player("tmarques", "green");
 
   if (my_player.red_team->playerBelongsToTeam("tmarques"))
   {
     cout << "o tiago esta na equipa certa" << endl;
   };
+
+  ros::NodeHandle n;
+
+  ros::Rate loop_rate(10);
+  while (ros::ok())
+  {
+    my_player.move();
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
 
   ros::spin();
 }
