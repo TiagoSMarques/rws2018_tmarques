@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <vector>
@@ -11,8 +12,20 @@
 #include <sstream>
 
 #include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 
 using namespace std;
+using namespace ros;
+using namespace tf;
+
+#define DEFAULT_TIME 0.05
+
+float randomizePosition(float* x, float* y)
+{
+  srand(static_cast<unsigned>(time(0)));
+  *x = (((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - 0.5) * 10);
+  *y = (((static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) - 0.5) * 10);
+}
 
 namespace rws_tmarques
 {
@@ -90,6 +103,7 @@ public:
   tf::Transform T;
   boost::shared_ptr<ros::Subscriber> sub;
   ros::Publisher vis_pub;
+  tf::TransformListener listener;
 
   MyPlayer(string argin_name, string argin_team) : Player(argin_name)
   {
@@ -145,6 +159,46 @@ public:
     ROS_INFO("Warping to x=%f y=%f, a=%f", x, y, alpha);
   }
 
+  double getAngleToPlayer(string other_player, double time_to_wait = DEFAULT_TIME)
+  {
+    StampedTransform t;
+    Time now = Time(0);
+    try
+    {
+      listener.waitForTransform("tmarques", other_player, now, Duration(time_to_wait));
+      listener.lookupTransform("tmarques", other_player, now, t);
+    }
+    catch (TransformException& ex)
+    {
+      ROS_ERROR("%s", ex.what());
+      return NAN;
+    }
+    return atan2(t.getOrigin().y(), t.getOrigin().x());
+  }
+
+  // distance
+  float getDistanceToPlayer(string player_name, float time_to_wait = 0.1)
+  {
+    tf::StampedTransform trans;
+    ros::Time now = Time(0);  // get the latest transform received
+
+    try
+    {
+      listener.waitForTransform(name, player_name, now, Duration(time_to_wait));
+      listener.lookupTransform(name, player_name, now, trans);
+    }
+    catch (tf::TransformException ex)
+    {
+      ROS_ERROR("%s", ex.what());
+      ros::Duration(0.01).sleep();
+      return 10000;
+    }
+
+    float x = trans.getOrigin().x();
+    float y = trans.getOrigin().y();
+    return sqrt(x * x + y * y);
+  }
+
   void move(const rws2018_msgs::MakeAPlay::ConstPtr& msg)
   {
     double x = T.getOrigin().x();
@@ -154,9 +208,23 @@ public:
     //--------------------------
     //----AI PART---------------
     //--------------------------
-    double displ = 6;
-    double delta_alpha = M_PI / 2;
+    // tf::StampedTransform mtiagoTrsilva;
 
+    double displ = 6;
+    double delta_alpha = getAngleToPlayer(my_preys->player_names[1]);
+
+    // for (size_t i = 0; i < my_preys->player_names[i]; i++)
+    // {
+    //   double dist = getDistanceToPlayer(my_preys->player_names[i]);
+
+    //   vector<double> preys;
+    //   preys.push_back(dist);
+
+    //   // double maxdist = max_element(preys.begin() preys.end());
+    // }
+
+    if (isnan(delta_alpha))
+      delta_alpha = 0;
     //--------------------------
     //----CONSTRAINS PART-------
     //--------------------------
@@ -186,7 +254,7 @@ public:
     marker.ns = "tmarques";
     marker.id = 0;
     marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
-    marker.text = "weeee";
+    marker.text = "Gotta catch'em all!";
 
     marker.action = visualization_msgs::Marker::ADD;
     marker.pose.position.x = 0.5;
