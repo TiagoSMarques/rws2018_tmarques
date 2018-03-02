@@ -85,6 +85,8 @@ public:
   boost::shared_ptr<Team> my_hunter;
 
   ros::NodeHandle n;
+  tf::TransformBroadcaster br;  // declare the bradcaster
+  tf::Transform T;
   boost::shared_ptr<ros::Subscriber> sub;
 
   MyPlayer(string argin_name, string argin_team) : Player(argin_name)
@@ -117,22 +119,64 @@ public:
 
     sub = boost::shared_ptr<ros::Subscriber>(new ros::Subscriber());
     *sub = n.subscribe("/make_a_play", 100, &MyPlayer::move, this);
+
+    srand(4444 * time(NULL));
+    double start_x = ((double)rand() / (double)RAND_MAX) * 10 - 5;
+    double start_y = ((double)rand() / (double)RAND_MAX) * 10 - 5;
+
     PrintReport();
   }
 
-  void move(const rws2018_msgs::MakeAPlay::ConstPtr& msgs)
+  void warp(double x, double y, double alpha)
   {
-    static float x = 0;
-    static tf::TransformBroadcaster br;  // declare the bradcaster
-    tf::Transform transform;
-
-    transform.setOrigin(tf::Vector3(x -= 0.01, x -= 0.01, 0.0));
+    T.setOrigin(tf::Vector3(x, y, 0.0));
     tf::Quaternion q;
-    q.setRPY(0, 0, M_PI / 4);
-    transform.setRotation(q);
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tmarques"));
+    q.setRPY(0, 0, alpha);
+    T.setRotation(q);
+    br.sendTransform(tf::StampedTransform(T, ros::Time::now(), "world", "tmarques"));
+    ROS_INFO("Warping to x=%f y=%f, a=%f", x, y, alpha);
+  }
+
+  void move(const rws2018_msgs::MakeAPlay::ConstPtr& msg)
+  {
+    double x = T.getOrigin().x();
+    double y = T.getOrigin().y();
+    double a = 0;
+
+    //--------------------------
+    //----AI PART---------------
+    //--------------------------
+    double displ = 6;
+    double delta_alpha = M_PI / 2;
+
+    //--------------------------
+    //----CONSTRAINS PART-------
+    //--------------------------
+    double displ_max = msg->dog;
+    double displ_with_constrains;
+    displ > displ_max ? displ = displ_max : displ = displ;
+
+    double delta_alpha_max = M_PI / 30;
+
+    // clang-format off
+    fabs(delta_alpha) > fabs(delta_alpha_max) ? delta_alpha = delta_alpha_max * delta_alpha / fabs(delta_alpha) :                      delta_alpha = delta_alpha;
+    // clang-format on
+    tf::Transform my_move_T;
+    my_move_T.setOrigin(tf::Vector3(displ, 0.0, 0.0));
+    tf::Quaternion q1;
+    q1.setRPY(0, 0, delta_alpha);
+    my_move_T.setRotation(q1);
+
+    T = T * my_move_T;
+    br.sendTransform(tf::StampedTransform(T, ros::Time::now(), "world", "tmarques"));
+
+    // transform.setOrigin(tf::Vector3(x -= 0.05, y, 0.0));
+    // tf::Quaternion q;
+    // q.setRPY(0, 0, a);
+    // transform.setRotation(q);
+    // br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tmarques"));
     // PrintReport();
-    ROS_INFO("Moving to");
+    // ROS_INFO("Moving to");
   }
 
   void PrintReport()
