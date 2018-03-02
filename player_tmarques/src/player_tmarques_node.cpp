@@ -7,6 +7,7 @@
 
 #include <rws2018_libs/team.h>
 #include <rws2018_msgs/MakeAPlay.h>
+#include <visualization_msgs/Marker.h>
 #include <sstream>
 
 #include <tf/transform_broadcaster.h>
@@ -88,9 +89,11 @@ public:
   tf::TransformBroadcaster br;  // declare the bradcaster
   tf::Transform T;
   boost::shared_ptr<ros::Subscriber> sub;
-
+  ros::Publisher vis_pub;
   MyPlayer(string argin_name, string argin_team) : Player(argin_name)
   {
+    vis_pub = n.advertise<visualization_msgs::Marker>("/bocas", 1);
+
     red_team = boost::shared_ptr<Team>(new Team("red"));
     green_team = boost::shared_ptr<Team>(new Team("green"));
     blue_team = boost::shared_ptr<Team>(new Team("blue"));
@@ -174,13 +177,34 @@ public:
     T = T * my_move_T;
     br.sendTransform(tf::StampedTransform(T, ros::Time::now(), "world", "tmarques"));
 
-    // transform.setOrigin(tf::Vector3(x -= 0.05, y, 0.0));
-    // tf::Quaternion q;
-    // q.setRPY(0, 0, a);
-    // transform.setRotation(q);
-    // br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tmarques"));
-    // PrintReport();
-    // ROS_INFO("Moving to");
+    //-----Boca
+
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = name;
+    marker.header.stamp = ros::Time();
+    // marker.ns = "my_namespace";
+    // marker.id = 0;
+    marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+    marker.text = "weeee";
+
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.pose.position.x = x + 1;
+    marker.pose.position.y = y + 1;
+    marker.pose.position.z = 0;
+    marker.pose.orientation.x = 0.0;
+    marker.pose.orientation.y = 0.0;
+    marker.pose.orientation.z = 0.0;
+    marker.pose.orientation.w = 1.0;
+    marker.scale.x = 1;
+    marker.scale.y = 1;
+    marker.scale.z = 1;
+    marker.color.a = 1.0;  // Don't forget to set the alpha!
+    marker.color.r = 0.0;
+    marker.color.g = 1.0;
+    marker.color.b = 0.0;
+    // only if using a MESH_RESOURCE marker type:
+    // marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+    vis_pub.publish(marker);
   }
 
   void PrintReport()
