@@ -90,6 +90,7 @@ public:
   tf::Transform T;
   boost::shared_ptr<ros::Subscriber> sub;
   ros::Publisher vis_pub;
+
   MyPlayer(string argin_name, string argin_team) : Player(argin_name)
   {
     vis_pub = n.advertise<visualization_msgs::Marker>("/bocas", 1);
@@ -195,9 +196,9 @@ public:
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
-    marker.scale.x = 1;
-    marker.scale.y = 1;
-    marker.scale.z = 1;
+    marker.scale.x = 0.3;
+    marker.scale.y = 0.3;
+    // marker.scale.z = 0.6;
     marker.color.a = 1.0;  // Don't forget to set the alpha!
     marker.color.r = 0.0;
     marker.color.g = 1.0;
