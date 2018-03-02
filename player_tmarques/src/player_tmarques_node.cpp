@@ -226,7 +226,7 @@ public:
         player_to_hunt = my_preys->player_names[i];
       }
     }
-    double displacement = 1;  // max velocity for now
+    double displacement = 100;  // max velocity for now
 
     double delta_alpha = getAngleToPlayer(player_to_hunt);
 
