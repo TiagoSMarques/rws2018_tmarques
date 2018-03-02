@@ -37,7 +37,8 @@ public:
         return setTeamName("blue");
         break;
       default:
-        cout << "wrong team index given. Cannot set team" << endl;
+        // cout << "wrong team index given. Cannot set team" << endl;
+        ROS_INFO("wrong team index given. Cannot set team");
         break;
     }
   }
@@ -53,7 +54,8 @@ public:
     else
     {
       this->team = "no team";
-      cout << "cannot set team name to " << team << endl;
+      // cout << "cannot set team name to " << team << endl;
+      ROS_INFO("cannot set team name to %s", team.c_str());
       return 0;
     }
   }
@@ -126,7 +128,10 @@ public:
 
   void PrintReport()
   {
-    cout << "My name is " << name << " and my team is " << getTeam() << endl;
+    // cout << "My name is " << name << " and my team is " << getTeam() << endl;
+    // substituir o cout por um print à ros
+    // ROS_INFO_STREAM("My name is " << name << " and my team is " << getTeam())
+    ROS_INFO("My name is %s and my team is %s ", name.c_str(), getTeam().c_str());
   }
 };
 }
@@ -140,7 +145,8 @@ int main(int argc, char** argv)
 
   if (my_player.red_team->playerBelongsToTeam("tmarques"))
   {
-    cout << "o tiago esta na equipa certa" << endl;
+    // cout << "o tiago esta na equipa certa" << endl;
+    ROS_INFO("O Tiago esta na equipa certa");
   };
 
   ros::NodeHandle n;
