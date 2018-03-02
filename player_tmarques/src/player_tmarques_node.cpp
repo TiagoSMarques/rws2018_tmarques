@@ -124,6 +124,7 @@ public:
     q.setRPY(0, 0, M_PI / 4);
     transform.setRotation(q);
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tmarques"));
+    PrintReport();
   }
 
   void PrintReport()
