@@ -6,6 +6,7 @@
 #include "std_msgs/String.h"
 
 #include <rws2018_libs/team.h>
+#include <rws2018_msgs/MakeAPlay.h>
 #include <sstream>
 
 #include <tf/transform_broadcaster.h>
@@ -38,7 +39,7 @@ public:
         break;
       default:
         // cout << "wrong team index given. Cannot set team" << endl;
-        ROS_INFO("wrong team index given. Cannot set team");
+        ROS_ERROR("wrong team index given. Cannot set team");
         break;
     }
   }
@@ -83,6 +84,9 @@ public:
   boost::shared_ptr<Team> my_preys;
   boost::shared_ptr<Team> my_hunter;
 
+  ros::NodeHandle n;
+  boost::shared_ptr<ros::Subscriber> sub;
+
   MyPlayer(string argin_name, string argin_team) : Player(argin_name)
   {
     red_team = boost::shared_ptr<Team>(new Team("red"));
@@ -111,20 +115,24 @@ public:
       setTeamName("blue");
     }
 
+    sub = boost::shared_ptr<ros::Subscriber>(new ros::Subscriber());
+    *sub = n.subscribe("/make_a_play", 100, &MyPlayer::move, this);
     PrintReport();
   }
 
-  void move()
+  void move(const rws2018_msgs::MakeAPlay::ConstPtr& msgs)
   {
+    static float x = 0;
     static tf::TransformBroadcaster br;  // declare the bradcaster
     tf::Transform transform;
 
-    transform.setOrigin(tf::Vector3(-2, -4, 0.0));
+    transform.setOrigin(tf::Vector3(x -= 0.01, x -= 0.01, 0.0));
     tf::Quaternion q;
     q.setRPY(0, 0, M_PI / 4);
     transform.setRotation(q);
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "tmarques"));
-    PrintReport();
+    // PrintReport();
+    ROS_INFO("Moving to");
   }
 
   void PrintReport()
@@ -153,12 +161,12 @@ int main(int argc, char** argv)
   ros::NodeHandle n;
 
   ros::Rate loop_rate(10);
-  while (ros::ok())
-  {
-    my_player.move();
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
+  // while (ros::ok())
+  // {
+  //   my_player.move();
+  //   ros::spinOnce();
+  //   loop_rate.sleep();
+  // }
 
   ros::spin();
 }
