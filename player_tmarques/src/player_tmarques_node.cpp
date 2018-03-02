@@ -211,17 +211,24 @@ public:
     // tf::StampedTransform mtiagoTrsilva;
 
     double displ = 6;
-    double delta_alpha = getAngleToPlayer(my_preys->player_names[1]);
 
-    // for (size_t i = 0; i < my_preys->player_names[i]; i++)
-    // {
-    //   double dist = getDistanceToPlayer(my_preys->player_names[i]);
+    double min_distance = 99999;
+    string player_to_hunt = "no player";
+    for (size_t i = 0; i < my_preys->player_names.size(); i++)
+    {
+      double dist = getDistanceToPlayer(my_preys->player_names[i]);
+      if (isnan(dist))
+      {
+      }
+      else if (dist < min_distance)
+      {
+        min_distance = dist;
+        player_to_hunt = my_preys->player_names[i];
+      }
+    }
+    double displacement = 1;  // max velocity for now
 
-    //   vector<double> preys;
-    //   preys.push_back(dist);
-
-    //   // double maxdist = max_element(preys.begin() preys.end());
-    // }
+    double delta_alpha = getAngleToPlayer(player_to_hunt);
 
     if (isnan(delta_alpha))
       delta_alpha = 0;
