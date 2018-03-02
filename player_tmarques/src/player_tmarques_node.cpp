@@ -183,8 +183,8 @@ public:
     visualization_msgs::Marker marker;
     marker.header.frame_id = name;
     marker.header.stamp = ros::Time();
-    // marker.ns = "my_namespace";
-    // marker.id = 0;
+    marker.ns = "tmarques";
+    marker.id = 0;
     marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
     marker.text = "weeee";
 
@@ -196,13 +196,14 @@ public:
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
-    marker.scale.x = 0.3;
-    marker.scale.y = 0.3;
-    // marker.scale.z = 0.6;
+
+    marker.scale.z = 0.3;
     marker.color.a = 1.0;  // Don't forget to set the alpha!
-    marker.color.r = 0.0;
+    marker.color.r = 1.0;
     marker.color.g = 1.0;
     marker.color.b = 0.0;
+
+    marker.lifetime = ros::Duration(2);
     // only if using a MESH_RESOURCE marker type:
     // marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
     vis_pub.publish(marker);
