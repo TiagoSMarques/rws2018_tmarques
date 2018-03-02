@@ -235,7 +235,7 @@ public:
     //--------------------------
     //----CONSTRAINS PART-------
     //--------------------------
-    double displ_max = msg->dog;
+    double displ_max = msg->cat;
     double displ_with_constrains;
     displ > displ_max ? displ = displ_max : displ = displ;
 
