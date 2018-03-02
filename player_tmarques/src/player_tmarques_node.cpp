@@ -189,15 +189,15 @@ public:
     marker.text = "weeee";
 
     marker.action = visualization_msgs::Marker::ADD;
-    marker.pose.position.x = x + 1;
-    marker.pose.position.y = y + 1;
+    marker.pose.position.x = 0.5;
+    marker.pose.position.y = 0.5;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
 
-    marker.scale.z = 0.3;
+    marker.scale.z = 0.35;
     marker.color.a = 1.0;  // Don't forget to set the alpha!
     marker.color.r = 1.0;
     marker.color.g = 1.0;
