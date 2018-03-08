@@ -294,16 +294,16 @@ public:
 
     double displacement = 100;  // max velocity for now
     double delta_alpha = 0;
-    if ((min_distance_hunters < min_distance_preys * 0.7) && (min_distance_hunters < 2))
-    {
-      player_goal = player_to_escape;
-      delta_alpha = -getAngleToPLayer(player_goal);
-    }
-    else
-    {
-      player_goal = player_to_hunt;
-      delta_alpha = getAngleToPLayer(player_goal);
-    }
+    // if ((min_distance_hunters < min_distance_preys * 0.7) && (min_distance_hunters < 2))
+    // {
+    //   player_goal = player_to_escape;
+    //   delta_alpha = -getAngleToPLayer(player_goal);
+    // }
+    // else
+    // {
+    player_goal = player_to_hunt;
+    delta_alpha = getAngleToPLayer(player_goal);
+    //}
 
     if (getLimits())
     {
