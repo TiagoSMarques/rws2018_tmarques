@@ -14,7 +14,7 @@
 
 #include <rws2018_msgs/MakeAPlay.h>
 
-#define DEFAULT_TIME 0.05
+#define DEFAULT_TIME 0.03
 
 using namespace ros;
 
@@ -292,7 +292,7 @@ public:
     min_distance_preys = getDistanceToPlayer(player_to_hunt);
     min_distance_hunters = getDistanceToPlayer(player_to_escape);
 
-    double displacement = 100;  // max velocity for now
+    double displacement = 80;  // max velocity for now
     double delta_alpha = 0;
     // if ((min_distance_hunters < min_distance_preys * 0.7) && (min_distance_hunters < 2))
     // {
