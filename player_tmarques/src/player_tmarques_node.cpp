@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include <sensor_msgs/PointCloud2.h>
+//#include <>
 // Boost includes
 #include <boost/shared_ptr.hpp>
 
@@ -98,6 +100,10 @@ public:
   boost::shared_ptr<ros::Publisher> pub;   // declare the publisher
   tf::TransformListener listener;          // declare listener
   boost::shared_ptr<ServiceServer> game_query_srv;
+  // lala
+  boost::shared_ptr<ros::Subscriber> subPc;  // declare the subscriver
+  string point_cloud_guess = "";
+
   MyPlayer(string argin_name, string argin_team) : Player(argin_name)
   {
     red_team = boost::shared_ptr<Team>(new Team("red"));
@@ -132,6 +138,10 @@ public:
     sub = boost::shared_ptr<ros::Subscriber>(new ros::Subscriber());
     *sub = n.subscribe("/make_a_play", 100, &MyPlayer::move, this);
 
+    // Subscribe to service topic point cloud
+    subPc = boost::shared_ptr<ros::Subscriber>(new ros::Subscriber());
+    *subPc = n.subscribe("/object_point_cloud", 1, &MyPlayer::DetectShape, this);
+
     // Message publisher
     pub = boost::shared_ptr<ros::Publisher>(new ros::Publisher());
     *pub = n.advertise<visualization_msgs::Marker>("/bocas", 0);
@@ -152,11 +162,21 @@ public:
     PrintReport();
   }
 
+  void DetectShape(const sensor_msgs::PointCloud2::ConstPtr &msg)
+  {
+    ROS_INFO("Received a point cloud.");
+    // AI part for object recognition
+    // ros pcl tranformpclcould2to pclcloud
+
+    point_cloud_guess = "tomato";
+  }
+
   bool RespondToGameQuery(rws2018_msgs::GameQuery::Request &req, rws2018_msgs::GameQuery::Response &resp)
   {
     ROS_WARN("I am %s and I am responding to a service request!", name.c_str());
 
-    resp.resposta = "Grao de arroz";
+    resp.resposta = point_cloud_guess;
+    // DetectShape();
     return true;
   }
 

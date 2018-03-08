@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   rws2018_libs
   tf
+  pcl_ros
   rws2018_msgs
 )
 
