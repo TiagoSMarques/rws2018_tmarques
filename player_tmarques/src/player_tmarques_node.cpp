@@ -339,8 +339,8 @@ public:
     //----------- CONSTRAINS part ---------//
     //-------------------------------------//
 
-    double displacement_max = getMaxDistance(msg);
-    // double displacement_max = msg->dog;
+    // double displacement_max = getMaxDistance(msg);
+    double displacement_max = msg->dog;
     double displacement_with_constrains;
     displacement > displacement_max ? displacement = displacement_max : displacement = displacement;
 
